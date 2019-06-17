@@ -1,18 +1,18 @@
 kind: StatefulSet
 apiVersion: apps/v1beta1
 metadata:
-  name: csi-scale-attacher
+  name: csi-spectrum-scale-attacher
 spec:
-  serviceName: "csi-scale-attacher"
+  serviceName: "csi-spectrum-scale-attacher"
   replicas: 1
   template:
     metadata:
       labels:
-        app: csi-scale-attacher
+        app: csi-spectrum-scale-attacher
     spec:
       serviceAccount: csi-attacher
       containers:
-        - name: csi-scale-attacher
+        - name: csi-spectrum-scale-attacher
           image: quay.io/k8scsi/csi-attacher:v1.0.0
           args:
             - "--v=5"
@@ -21,13 +21,13 @@ spec:
             - "--resync=10m" # Added
           env:
             - name: ADDRESS
-              value: /var/lib/kubelet/plugins/csi-scale/csi.sock
+              value: /var/lib/kubelet/plugins/csi-spectrum-scale/csi.sock
           imagePullPolicy: "IfNotPresent"
           volumeMounts:
             - name: socket-dir
-              mountPath: /var/lib/kubelet/plugins/csi-scale
+              mountPath: /var/lib/kubelet/plugins/csi-spectrum-scale
       volumes:
         - name: socket-dir
           hostPath:
-            path: /var/lib/kubelet/plugins/csi-scale
+            path: /var/lib/kubelet/plugins/csi-spectrum-scale
             type: DirectoryOrCreate

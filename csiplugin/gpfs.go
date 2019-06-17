@@ -36,7 +36,7 @@ import (
 
 // PluginFolder defines the location of scaleplugin
 const (
-	PluginFolder      = "/var/lib/kubelet/plugins/csi-scale"
+	PluginFolder      = "/var/lib/kubelet/plugins/csi-spectrum-scale"
 )
 
 type ScaleDriver struct {

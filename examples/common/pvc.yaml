@@ -8,4 +8,4 @@ spec:
   resources:
     requests:
       storage: 1Gi
-  storageClassName: csi-scale
+  storageClassName: csi-spectrum-scale
