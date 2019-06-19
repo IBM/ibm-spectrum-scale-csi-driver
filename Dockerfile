@@ -1,4 +1,4 @@
-FROM centos:7
+FROM alpine:3.9
 LABEL maintainers="FSaaS Authors"
 LABEL description="CSI Plugin for IBM Spectrum Scale"
 
