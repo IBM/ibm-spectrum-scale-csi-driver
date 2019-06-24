@@ -17,11 +17,11 @@ limitations under the License.
 package scale
 
 import (
-	"fmt"
+//	"fmt"
 	"sync"
 	"os"
 	"strings"
-	"path"
+//	"path"
 
 	"github.com/golang/glog"
 	"golang.org/x/net/context"
@@ -30,7 +30,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	volumeutils "k8s.io/kubernetes/pkg/volume/util"
+//	volumeutils "k8s.io/kubernetes/pkg/volume/util"
 	"k8s.io/kubernetes/pkg/util/mount"
 )
 
@@ -49,15 +49,8 @@ func (ns *ScaleNodeServer) NodePublishVolume(ctx context.Context, req *csi.NodeP
 	// Validate Arguments
 	targetPath := req.GetTargetPath()
 	stagingTargetPath := req.GetStagingTargetPath()
-	readOnly := req.GetReadonly()
 	volumeID := req.GetVolumeId()
 	volumeCapability := req.GetVolumeCapability()
-
-	volBackendFs := req.GetVolumeContext()["volBackendFs"]
-        if len(volBackendFs) > 0 {
-		fileset := strings.Replace(volumeID, "-", "_", -1)
-                stagingTargetPath = path.Join(volBackendFs, fileset)
-        }
 
 	if len(volumeID) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "NodePublishVolume Volume ID must be provided")
@@ -72,61 +65,36 @@ func (ns *ScaleNodeServer) NodePublishVolume(ctx context.Context, req *csi.NodeP
 		return nil, status.Error(codes.InvalidArgument, "NodePublishVolume Volume Capability must be provided")
 	}
 
-	notMnt, err := ns.Mounter.Interface.IsLikelyNotMountPoint(targetPath)
-	if err != nil && !os.IsNotExist(err) {
-		glog.Errorf("cannot validate mount point: %s %v", targetPath, err)
-		return nil, err
+/* <cluster_id>;<filesystem_uuid>;path=<symlink_path> */
+
+	splitVId := strings.Split(volumeID, ";")
+	if (len(splitVId) < 3) {
+	   return nil, status.Error(codes.InvalidArgument, "NodePublishVolume VolumeID is not in proper format")
 	}
 
-	if !notMnt {
-		// TODO: check if mount is compatible. Return OK if it is, or appropriate error.
-		/*
-			1) Target Path MUST be the vol referenced by vol ID
-			2) VolumeCapability MUST match
-			3) Readonly MUST match
+	SlnkPart := splitVId[2]
+	targetSlnkPath := strings.Split(SlnkPart, "=")
 
-		*/
-		return &csi.NodePublishVolumeResponse{}, nil
+	if (len(targetSlnkPath) < 2) {
+		return nil, status.Error(codes.InvalidArgument, "NodePublishVolume VolumeID is not in proper format")		
 	}
 
-	if err := ns.Mounter.Interface.MakeDir(targetPath); err != nil {
-		glog.Errorf("mkdir failed on disk %s (%v)", targetPath, err)
-		return nil, status.Error(codes.InvalidArgument,
-                                         fmt.Sprintf("mkdir failed on disk %s (%v)", targetPath, err))
+	glog.Infof("Target SpectrumScale Symlink Path : %v\n", targetSlnkPath[1])
+
+	if  _, err := os.Stat(targetPath); err == nil {
+        args := []string{"-rf", targetPath}
+        outputBytes, err := executeCmd("rm", args)
+        glog.Infof("Cmd rm args: %v Output: %v", args, outputBytes)
+        if err != nil {
+           return nil, err
+        }
 	}
 
-	// Perform a bind mount to the full path to allow duplicate mounts of the same PD.
-	options := []string{"bind"}
-	if readOnly {
-		options = append(options, "ro")
-	}
-
-	err = ns.Mounter.Interface.Mount(stagingTargetPath, targetPath, "ext4", options)
+	args := []string{"-sf", targetSlnkPath[1], targetPath}
+	outputBytes, err := executeCmd("/bin/ln", args)
+	glog.Infof("Cmd /bin/ln args: %v Output: %v", args, outputBytes)
 	if err != nil {
-		notMnt, mntErr := ns.Mounter.Interface.IsLikelyNotMountPoint(targetPath)
-		if mntErr != nil {
-			glog.Errorf("IsLikelyNotMountPoint check failed: %v", mntErr)
-			return nil, status.Error(codes.Internal, fmt.Sprintf("NodePublishVolume failed to check whether target path is a mount point: %v", err))
-		}
-		if !notMnt {
-			if mntErr = ns.Mounter.Interface.Unmount(targetPath); mntErr != nil {
-				glog.Errorf("Failed to unmount: %v", mntErr)
-				return nil, status.Error(codes.Internal, fmt.Sprintf("NodePublishVolume failed to unmount target path: %v", err))
-			}
-			notMnt, mntErr := ns.Mounter.Interface.IsLikelyNotMountPoint(targetPath)
-			if mntErr != nil {
-				glog.Errorf("IsLikelyNotMountPoint check failed: %v", mntErr)
-				return nil, status.Error(codes.Internal, fmt.Sprintf("NodePublishVolume failed to check whether target path is a mount point: %v", err))
-			}
-			if !notMnt {
-				// This is very odd, we don't expect it.  We'll try again next sync loop.
-				glog.Errorf("%s is still mounted, despite call to unmount().  Will try again next sync loop.", targetPath)
-				return nil, status.Error(codes.Internal, fmt.Sprintf("NodePublishVolume something is wrong with mounting: %v", err))
-			}
-		}
-		os.Remove(targetPath)
-		glog.Errorf("Mount of disk %s failed: %v", targetPath, err)
-		return nil, status.Error(codes.Internal, fmt.Sprintf("NodePublishVolume mount of disk failed: %v", err))
+		return nil, err
 	}
 
 	glog.V(4).Infof("Successfully mounted %s", targetPath)
@@ -147,11 +115,9 @@ func (ns *ScaleNodeServer) NodeUnpublishVolume(ctx context.Context, req *csi.Nod
 		return nil, status.Error(codes.InvalidArgument, "NodeUnpublishVolume Target Path must be provided")
 	}
 
-	err := volumeutils.UnmountMountPoint(targetPath, ns.Mounter.Interface, false /* bind mount */)
-	if err != nil {
-		return nil, status.Error(codes.Internal, fmt.Sprintf("Unmount failed: %v\nUnmounting arguments: %s\n", err, targetPath))
+	if err := os.RemoveAll(targetPath); err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
 	}
-
 	return &csi.NodeUnpublishVolumeResponse{}, nil
 }
 
@@ -174,20 +140,6 @@ func (ns *ScaleNodeServer) NodeStageVolume(ctx context.Context, req *csi.NodeSta
 	if volumeCapability == nil {
 		return nil, status.Error(codes.InvalidArgument, "NodeStageVolume Volume Capability must be provided")
 	}
-
-	// Check if we operate on a fileset and skip staging ; TODO decouple "existing fs" and fset option 
-	volBackendFs := req.GetVolumeContext()["volBackendFs"]
-	if len(volBackendFs) > 0 {
-		return &csi.NodeStageVolumeResponse{}, nil
-	}
-
-	err := ops.MountFS(volumeID, stagingTargetPath, ns.Driver.nodeID)
-	if err != nil {
-		return nil, status.Error(codes.Internal,
-			fmt.Sprintf("Failed to mount device")) // from (%q) to (%q) with fstype (%q) and options (%q): %v",
-				//devicePath, stagingTargetPath, fstype, options, err))
-	}
-
 	return &csi.NodeStageVolumeResponse{}, nil
 }
 
@@ -207,15 +159,6 @@ func (ns *ScaleNodeServer) NodeUnstageVolume(ctx context.Context, req *csi.NodeU
 		return nil, status.Error(codes.InvalidArgument, "NodeUnstageVolume Staging Target Path must be provided")
 	}
 
-	volSplit := strings.Split(volumeID, "-")
-	if volSplit[len(volSplit) - 1] == "fileset" {
-                return &csi.NodeUnstageVolumeResponse{}, nil
-        }
-
-	err := ops.UnmountFS(volumeID)
-	if err != nil {
-		return nil, status.Error(codes.Internal, fmt.Sprintf("NodeUnstageVolume failed to unmount at path %s: %v", stagingTargetPath, err))
-	}
 	return &csi.NodeUnstageVolumeResponse{}, nil
 }
 

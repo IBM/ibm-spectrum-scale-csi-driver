@@ -21,11 +21,10 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"bytes"
 	"strconv"
-	//"os/exec"
+	"os/exec"
 	"strings"
-	//"errors"
-
 	"github.com/golang/glog"
 )
 
@@ -177,6 +176,18 @@ func deleteVolInfo(image string, persistentStoragePath string) error {
 		}
 	}
 	return nil
+}
+
+func executeCmd(command string, args []string) ([]byte, error) {
+        cmd := exec.Command(command, args...)
+        var stdout bytes.Buffer
+        var stderr bytes.Buffer
+
+        cmd.Stdout = &stdout
+        cmd.Stderr = &stderr
+        err := cmd.Run()
+        stdOut := stdout.Bytes()
+        return stdOut, err
 }
 
 // DeleteImage deletes a volume with provision and volume options.
