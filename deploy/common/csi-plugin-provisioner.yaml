@@ -2,6 +2,8 @@ kind: StatefulSet
 apiVersion: apps/v1beta1
 metadata:
   name: csi-spectrum-scale-provisioner
+  labels:
+    product: ibm-spectrum-scale-csi
 spec:
   serviceName: "csi-spectrum-scale-provisioner"
   replicas: 1
@@ -9,6 +11,7 @@ spec:
     metadata:
       labels:
         app: csi-spectrum-scale-provisioner
+        product: ibm-spectrum-scale-csi
     spec:
       serviceAccount: csi-provisioner
       containers:

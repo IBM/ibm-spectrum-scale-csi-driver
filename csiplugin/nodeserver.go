@@ -1,18 +1,18 @@
-/*
-Copyright 2018 The Kubernetes Authors.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+/**
+ * Copyright 2019 IBM Corp.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package scale
 
@@ -42,6 +42,8 @@ type ScaleNodeServer struct {
 }
 
 func (ns *ScaleNodeServer) NodePublishVolume(ctx context.Context, req *csi.NodePublishVolumeRequest) (*csi.NodePublishVolumeResponse, error) {
+        glog.V(3).Infof("nodeserver NodePublishVolume")
+
 	ns.mux.Lock()
 	defer ns.mux.Unlock()
 	glog.V(4).Infof("NodePublishVolume called with req: %#v", req)
@@ -67,12 +69,18 @@ func (ns *ScaleNodeServer) NodePublishVolume(ctx context.Context, req *csi.NodeP
 
 /* <cluster_id>;<filesystem_uuid>;path=<symlink_path> */
 
-	splitVId := strings.Split(volumeID, ";")
-	if (len(splitVId) < 3) {
-	   return nil, status.Error(codes.InvalidArgument, "NodePublishVolume VolumeID is not in proper format")
-	}
+        splitVId := strings.Split(volumeID, ";")
 
-	SlnkPart := splitVId[2]
+        if (len(splitVId) < 3) {
+           return nil, status.Error(codes.InvalidArgument, "NodePublishVolume VolumeID is not in proper format")
+        }
+
+        index := 2
+        if ( len(splitVId) == 4 ) {
+                index = 3
+        }
+
+	SlnkPart := splitVId[index]
 	targetSlnkPath := strings.Split(SlnkPart, "=")
 
 	if (len(targetSlnkPath) < 2) {
@@ -82,12 +90,12 @@ func (ns *ScaleNodeServer) NodePublishVolume(ctx context.Context, req *csi.NodeP
 	glog.Infof("Target SpectrumScale Symlink Path : %v\n", targetSlnkPath[1])
 
 	if  _, err := os.Stat(targetPath); err == nil {
-        args := []string{"-rf", targetPath}
-        outputBytes, err := executeCmd("rm", args)
-        glog.Infof("Cmd rm args: %v Output: %v", args, outputBytes)
-        if err != nil {
-           return nil, err
-        }
+	        args := []string{targetPath}
+	        outputBytes, err := executeCmd("rmdir", args)
+		glog.Infof("Cmd rmdir args: %v Output: %v", args, outputBytes)
+	        if err != nil {
+	           return nil, err
+	        }
 	}
 
 	args := []string{"-sf", targetSlnkPath[1], targetPath}
@@ -102,6 +110,7 @@ func (ns *ScaleNodeServer) NodePublishVolume(ctx context.Context, req *csi.NodeP
 }
 
 func (ns *ScaleNodeServer) NodeUnpublishVolume(ctx context.Context, req *csi.NodeUnpublishVolumeRequest) (*csi.NodeUnpublishVolumeResponse, error) {
+        glog.V(3).Infof("nodeserver NodeUnpublishVolume")
 	ns.mux.Lock()
 	defer ns.mux.Unlock()
 	glog.V(4).Infof("NodeUnpublishVolume called with args: %v", req)
@@ -123,6 +132,7 @@ func (ns *ScaleNodeServer) NodeUnpublishVolume(ctx context.Context, req *csi.Nod
 
 func (ns *ScaleNodeServer) NodeStageVolume(ctx context.Context, req *csi.NodeStageVolumeRequest) (
 	*csi.NodeStageVolumeResponse, error) {
+        glog.V(3).Infof("nodeserver NodeStageVolume")
 	ns.mux.Lock()
 	defer ns.mux.Unlock()
 	glog.V(4).Infof("NodeStageVolume called with req: %#v", req)
@@ -145,6 +155,7 @@ func (ns *ScaleNodeServer) NodeStageVolume(ctx context.Context, req *csi.NodeSta
 
 func (ns *ScaleNodeServer) NodeUnstageVolume(ctx context.Context, req *csi.NodeUnstageVolumeRequest) (
 	*csi.NodeUnstageVolumeResponse, error) {
+        glog.V(3).Infof("nodeserver NodeUnstageVolume")
 	ns.mux.Lock()
 	defer ns.mux.Unlock()
 	glog.V(4).Infof("NodeUnstageVolume called with req: %#v", req)

@@ -16,14 +16,15 @@ NAME=csi-spectrum-scale
 
 .PHONY: all $NAME
 
-IMAGE_VERSION=v1.0.0
-IMAGE_NAME=sys-scale-containers-csi-docker-local.artifactory.swg-devops.com/$(NAME)
+IMAGE_VERSION=v1.0.0$(version)
+IMAGE_ARCH=amd64
+IMAGE_NAME=sys-scale-containers-csi-docker-local.artifactory.swg-devops.com/$(NAME)-$(IMAGE_ARCH)
 
 all: $NAME
 
 $NAME:
 	if [ ! -d ./vendor ]; then dep ensure; fi
-	CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -o  _output/$(NAME) ./cmd/csi-spectrum-scale
+	CGO_ENABLED=0 GOOS=linux GOARCH=$(IMAGE_ARCH) go build -a -ldflags '-extldflags "-static"' -o  _output/$(NAME) ./cmd/csi-spectrum-scale
 
 build-image: $NAME
 	docker build --network=host -t $(IMAGE_NAME):$(IMAGE_VERSION) .

@@ -1,4 +1,4 @@
-FROM alpine:3.9
+FROM registry.access.redhat.com/ubi7-minimal:latest
 LABEL maintainers="FSaaS Authors"
 LABEL description="CSI Plugin for IBM Spectrum Scale"
 

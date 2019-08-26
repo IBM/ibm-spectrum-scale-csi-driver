@@ -40,7 +40,7 @@ spec:
             capabilities:
               add: ["SYS_ADMIN"]
             allowPrivilegeEscalation: true
-          image: faas-registry.sl.cloud9.ibm.com:5000/csi-spectrum-scale:v1.0.0
+          image: sys-scale-containers-csi-docker-local.artifactory.swg-devops.com/csi-spectrum-scale:v1.0.0
           args :
             - "--nodeid=$(NODE_ID)"
             - "--endpoint=$(CSI_ENDPOINT)"
@@ -53,6 +53,10 @@ spec:
                   fieldPath: spec.nodeName
             - name: CSI_ENDPOINT
               value: unix:/var/lib/kubelet/plugins/csi-spectrum-scale/csi.sock
+            - name: SCALE_HOSTPATH
+              value: /ibm/fs1
+            - name: SKIP_MOUNT_UNMOUNT
+              value: "yes"
           imagePullPolicy: "IfNotPresent" # "Always"
           volumeMounts:
             - name: plugin-dir
@@ -62,10 +66,15 @@ spec:
               mountPropagation: "Bidirectional"
             - mountPath: /dev
               name: host-dev
-            - name: cmap-config
-              mountPath: /etc/config
+            - name: spectrum-scale-config
+              mountPath: /var/lib/ibm/config
+#            - name: cert1
+#              mountPath: /var/lib/ibm/ssl/public
             - name: gpfs-classic
-              mountPath: /gpfs
+              mountPath: /ibm/fs1
+            - name: secret1
+              mountPath: /var/lib/ibm/secret1
+              readOnly: true
       volumes:
         - name: plugin-dir
           hostPath:
@@ -82,11 +91,17 @@ spec:
         - name: host-dev
           hostPath:
             path: /dev
-        - name: cmap-config
+        - name: spectrum-scale-config
           configMap:
-            name: cmap-config
+            name: spectrum-scale-config
+#        - name: cert1
+#          configMap:
+#            name: cert1
         - name: gpfs-classic
           hostPath:
-            path: /gpfs
+            path: /ibm/fs1
             type: Directory
+        - name: secret1
+          secret:
+            secretName: secret1
 
