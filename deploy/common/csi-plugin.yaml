@@ -1,5 +1,5 @@
 kind: DaemonSet
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 metadata:
   name: csi-spectrum-scale
 spec:
@@ -11,6 +11,8 @@ spec:
       labels:
         app: csi-spectrum-scale
     spec:
+#      nodeSelector:
+#        spectrumscalenode: "yes"
       serviceAccount: csi-nodeplugin
       hostNetwork: true
       containers:

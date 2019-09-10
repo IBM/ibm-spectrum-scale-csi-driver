@@ -1,10 +1,13 @@
 kind: StatefulSet
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 metadata:
   name: csi-spectrum-scale-provisioner
   labels:
     product: ibm-spectrum-scale-csi
 spec:
+  selector:
+    matchLabels:
+      app: csi-spectrum-scale-provisioner
   serviceName: "csi-spectrum-scale-provisioner"
   replicas: 1
   template:
@@ -13,6 +16,8 @@ spec:
         app: csi-spectrum-scale-provisioner
         product: ibm-spectrum-scale-csi
     spec:
+#      nodeSelector:
+#        spectrumscalenode: "yes"
       serviceAccount: csi-provisioner
       containers:
         - name: csi-provisioner
