@@ -31,6 +31,8 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: spec.nodeName
+#            - name: k8sNodeName
+#              value: spectrumScaleNodeName
           volumeMounts:
             - name: plugin-dir
               mountPath: /var/lib/kubelet/plugins/csi-spectrum-scale
