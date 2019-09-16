@@ -8,6 +8,7 @@ parameters:
     clusterId: "7118073361626808055"
     uid: "1000"
     gid: "1000"
-    fileset-type: "dependent"
-    dependentFileset: "pvc-9c93ffc6-b113-47b4-bbb4-29306f567f2b"
+    inode-limit: "1024"
+    fileset-type: "independent"
 reclaimPolicy: Delete
+
