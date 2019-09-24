@@ -246,7 +246,7 @@ git clone git@github.com:IBM/ibm-spectrum-scale-csi-driver.git
 
 	```
 
-	wget --directory-prefix=/tmp/ [[https://github.com/golang/dep/releases/download/v0.5.1/dep-linux-amd64](https://github.com/golang/dep/releases/download/v0.5.1/dep-linux-amd64)](https://github.com/golang/dep/releases/download/v0.5.1/dep-linux-amd64](https://github.com/golang/dep/releases/download/v0.5.1/dep-linux-amd64))
+	wget --directory-prefix=/tmp/ https://github.com/golang/dep/releases/download/v0.5.1/dep-linux-amd64
 
   
 
