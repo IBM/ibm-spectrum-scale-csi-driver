@@ -17,7 +17,7 @@ spec:
       hostNetwork: true
       containers:
         - name: driver-registrar
-          image: quay.io/k8scsi/csi-node-driver-registrar:v1.0.1
+          image: $driverregistrar
           args:
             - "--v=5"
             - "--csi-address=$(ADDRESS)"
@@ -31,8 +31,6 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: spec.nodeName
-#            - name: k8sNodeName
-#              value: spectrumScaleNodeName
           volumeMounts:
             - name: plugin-dir
               mountPath: /var/lib/kubelet/plugins/csi-spectrum-scale
@@ -44,7 +42,7 @@ spec:
             capabilities:
               add: ["SYS_ADMIN"]
             allowPrivilegeEscalation: true
-          image: sys-scale-containers-csi-docker-local.artifactory.swg-devops.com/csi-spectrum-scale:v1.0.0
+          image: $spectrumscaleplugin
           args :
             - "--nodeid=$(NODE_ID)"
             - "--endpoint=$(CSI_ENDPOINT)"
@@ -58,7 +56,7 @@ spec:
             - name: CSI_ENDPOINT
               value: unix:/var/lib/kubelet/plugins/csi-spectrum-scale/csi.sock
             - name: SCALE_HOSTPATH
-              value: /ibm/fs1
+              value: $scalehostpath
             - name: SKIP_MOUNT_UNMOUNT
               value: "yes"
           imagePullPolicy: "IfNotPresent" # "Always"
@@ -68,16 +66,14 @@ spec:
             - name: pods-mount-dir
               mountPath: /var/lib/kubelet
               mountPropagation: "Bidirectional"
-            - mountPath: /dev
-              name: host-dev
             - name: spectrum-scale-config
               mountPath: /var/lib/ibm/config
-            
-              
+            $cacertline1
+              $cacertline2
             - name: gpfs-classic
-              mountPath: /ibm/fs1
-            - name: secret1
-              mountPath: /var/lib/ibm/secret1
+              mountPath: $scalehostpath
+            - name: guisecret
+              mountPath: /var/lib/ibm/guisecret
               readOnly: true
       volumes:
         - name: plugin-dir
@@ -92,20 +88,17 @@ spec:
           hostPath:
             path: /var/lib/kubelet
             type: Directory
-        - name: host-dev
-          hostPath:
-            path: /dev
         - name: spectrum-scale-config
           configMap:
             name: spectrum-scale-config
-        
-          
-            
+        $volcertline1
+          $volcertline2
+            $volcertline3
         - name: gpfs-classic
           hostPath:
-            path: /ibm/fs1
+            path: $scalehostpath
             type: Directory
-        - name: secret1
+        - name: guisecret
           secret:
-            secretName: secret1
+            secretName: guisecret
 

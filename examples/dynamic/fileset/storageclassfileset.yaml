@@ -6,9 +6,5 @@ provisioner: csi-spectrum-scale
 parameters:
     volBackendFs: "gpfs1"
     clusterId: "7118073361626808055"
-    uid: "1000"
-    gid: "1000"
-    inode-limit: "1024"
-    fileset-type: "independent"
 reclaimPolicy: Delete
 

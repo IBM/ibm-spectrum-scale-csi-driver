@@ -18,6 +18,8 @@ spec:
       containers:
         - name: driver-registrar
           image: $driverregistrar
+          securityContext:
+            privileged: true
           args:
             - "--v=5"
             - "--csi-address=$(ADDRESS)"
@@ -72,8 +74,8 @@ spec:
               $cacertline2
             - name: gpfs-classic
               mountPath: $scalehostpath
-            - name: secret1
-              mountPath: /var/lib/ibm/secret1
+            - name: guisecret
+              mountPath: /var/lib/ibm/guisecret
               readOnly: true
       volumes:
         - name: plugin-dir
@@ -98,7 +100,7 @@ spec:
           hostPath:
             path: $scalehostpath
             type: Directory
-        - name: secret1
+        - name: guisecret
           secret:
-            secretName: secret1
+            secretName: guisecret
 

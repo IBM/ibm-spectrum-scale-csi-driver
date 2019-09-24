@@ -16,8 +16,8 @@ NAME=csi-spectrum-scale
 
 .PHONY: all $NAME
 
-IMAGE_VERSION=v1.0.0
-IMAGE_NAME=sys-scale-containers-csi-docker-local.artifactory.swg-devops.com/$(NAME)
+IMAGE_VERSION=v0.9.0
+IMAGE_NAME=$(NAME)
 
 all: $NAME
 
@@ -28,5 +28,5 @@ $NAME:
 build-image: $NAME
 	docker build --network=host -t $(IMAGE_NAME):$(IMAGE_VERSION) .
 
-push-image: build-image
-	docker push $(IMAGE_NAME):$(IMAGE_VERSION)
+save-image: build-image
+	docker save $(IMAGE_NAME):$(IMAGE_VERSION) -o _output/$(IMAGE_NAME)_$(IMAGE_VERSION).tar

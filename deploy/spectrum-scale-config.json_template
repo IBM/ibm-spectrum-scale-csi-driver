@@ -8,7 +8,7 @@
      },
    "secureSslMode":$securesslmode,
    $cacertstr
-   "secrets":"secret1",
+   "secrets":"guisecret",
    "restApi": [
      {"guiHost":"$guihost",
       "guiPort":$guiport
