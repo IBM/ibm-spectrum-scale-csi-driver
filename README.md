@@ -109,9 +109,12 @@ The IBM Spectrum Scale Container Storage Interface (CSI) driver has the followin
   ```
 
 ## Building the docker image
-	Use * *method#1* * or * *method#2* * for building the docker image based on your preference/environment.
 
-** Method#1: Using local golang build environment
+	Use *method#1* or *method#2* for building the docker image based on your preference/environment.
+
+
+** Method#1: Using local golang build environment **
+
 	>This method involves installation of golang and dep package on local build machine
 
 1. Install the latest version of Go and add it to PATH. Refer https://golang.org/
@@ -171,6 +174,7 @@ The IBM Spectrum Scale Container Storage Interface (CSI) driver has the followin
 
 
 ** Method#2: Using multi-stage build approach **
+
 	>This method requires active Docker installation on local build machine.
 
 1. Clone the code
