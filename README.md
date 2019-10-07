@@ -108,7 +108,10 @@ The IBM Spectrum Scale Container Storage Interface (CSI) driver has the followin
   mmchfs <__filesystem_name__> -Q yes
   ```
 
-## Building the docker image
+## Building the docker image (Use method 1 or method 2 based on your preference or environment)
+
+## Method 1: Using local golang build environment
+	This method involves installation of golang and dep package on local build machine
 
 1. Install the latest version of Go and add it to PATH. Refer https://golang.org/
 
@@ -164,6 +167,30 @@ The IBM Spectrum Scale Container Storage Interface (CSI) driver has the followin
      ```
 
       A tar file of docker image will be stored under the _output directory.
+
+
+## Method 2: Using multi-stage build approach
+	This method requires active Docker installation on local build machine.
+
+1. Clone the code
+
+   ```
+   git clone https://github.com/IBM/ibm-spectrum-scale-csi-driver.git
+   cd ibm-spectrum-scale-csi-driver
+   ```
+
+2. Invoke multi-stage build
+
+   ```
+   docker build -t spectrum-scale-csi:0.9.0 -f Dockerfile.msb .
+   ```
+
+3. save the docker image
+
+   ```
+   docker save csi-spectrum-scale:v0.9.0 -o _output/csi-spectrum-scale_v0.9.0.tar
+   ```
+
 
 ## Install and Deploy the Spectrum Scale CSI driver
 
