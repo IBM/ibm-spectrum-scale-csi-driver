@@ -115,7 +115,7 @@ The IBM Spectrum Scale Container Storage Interface (CSI) driver has the followin
 
 **Method#1: Using local golang build environment**
 
-	>This method involves installation of golang and dep package on local build machine
+	This method involves installation of golang and dep package on local build machine
 
 1. Install the latest version of Go and add it to PATH. Refer https://golang.org/
 
@@ -173,9 +173,11 @@ The IBM Spectrum Scale Container Storage Interface (CSI) driver has the followin
       A tar file of docker image will be stored under the _output directory.
 
 
+
  **Method#2: Using multi-stage build approach**
 
-	>This method requires active Docker installation on local build machine.
+	This method requires active Docker installation on local build machine.
+
 
 1. Clone the code
 
@@ -195,6 +197,9 @@ The IBM Spectrum Scale Container Storage Interface (CSI) driver has the followin
    ```
    docker save csi-spectrum-scale:v0.9.0 -o _output/csi-spectrum-scale_v0.9.0.tar
    ```
+
+      A tar file of docker image will be stored under the _output directory.
+
 
 
 ## Install and Deploy the Spectrum Scale CSI driver
