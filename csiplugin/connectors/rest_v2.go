@@ -461,7 +461,7 @@ func (s *spectrumRestV2) SetFilesetQuota(filesystemName string, filesetName stri
 	quotaRequest := SetQuotaRequest_v2{}
 
 	quotaRequest.BlockHardLimit = quota
-	quotaRequest.BlockSoftLimit = quota
+	quotaRequest.BlockSoftLimit = softquota
 	quotaRequest.OperationType = "setQuota"
 	quotaRequest.QuotaType = "fileset"
 	quotaRequest.ObjectName = filesetName
