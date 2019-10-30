@@ -127,16 +127,14 @@ Pre-requisite: Docker 17.05 or higher is installed on local build machine.
    ```
    docker save ibm-spectrum-scale-csi:v0.9.2 -o ibm-spectrum-scale-csi_v0.9.2.tar
    ```
-
+   
    *On podman setup, use this command instead:*
 
    ```
    podman save ibm-spectrum-scale-csi:v0.9.2 -o ibm-spectrum-scale-csi_v0.9.2.tar
    ```
 
-      A tar file of docker image will be stored under the _output directory.
-
-
+   A tar file of docker image will be stored under the _output directory.
 
 ## Install and Deploy the Spectrum Scale CSI driver
 
