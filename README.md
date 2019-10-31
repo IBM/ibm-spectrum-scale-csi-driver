@@ -189,13 +189,25 @@ The IBM Spectrum Scale Container Storage Interface (CSI) driver has the followin
 2. Invoke multi-stage build
 
    ```
-   docker build -t spectrum-scale-csi:0.9.0 -f Dockerfile.msb .
+   docker build -t csi-spectrum-scale:v0.9.0 -f Dockerfile.msb .
+   ```
+
+   *On podman setup, use this command instead:*
+
+   ```
+   podman build -t csi-spectrum-scale:v0.9.0 -f Dockerfile.msb .
    ```
 
 3. save the docker image
 
    ```
    docker save csi-spectrum-scale:v0.9.0 -o _output/csi-spectrum-scale_v0.9.0.tar
+   ```
+
+   *On podman setup, use this command instead:*
+
+   ```
+   podman save csi-spectrum-scale:v0.9.0 -o _output/csi-spectrum-scale_v0.9.0.tar
    ```
 
       A tar file of docker image will be stored under the _output directory.
