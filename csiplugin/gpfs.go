@@ -17,22 +17,17 @@
 package scale
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"os"
 	"path"
 	"strings"
-
-	"github.com/container-storage-interface/spec/lib/go/csi"
-	"github.com/golang/glog"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
-	"k8s.io/kubernetes/pkg/util/mount"
 
 	"github.com/IBM/ibm-spectrum-scale-csi-driver/csiplugin/connectors"
 	"github.com/IBM/ibm-spectrum-scale-csi-driver/csiplugin/settings"
 	"github.com/IBM/ibm-spectrum-scale-csi-driver/csiplugin/utils"
+	"github.com/container-storage-interface/spec/lib/go/csi"
+	"github.com/golang/glog"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // PluginFolder defines the location of scaleplugin
@@ -59,55 +54,6 @@ type ScaleDriver struct {
 	nscap []*csi.NodeServiceCapability
 }
 
-var scaleVolumes map[string]*scaleVolume
-
-// Init checks for the persistent volume file and loads all found volumes
-// into a memory structure
-func init() {
-	glog.V(3).Infof("gpfs init")
-	scaleVolumes = map[string]*scaleVolume{}
-	if _, err := os.Stat(path.Join(PluginFolder, "controller")); os.IsNotExist(err) {
-		glog.Infof("scale: folder %s not found. Creating... \n", path.Join(PluginFolder, "controller"))
-		if err := os.Mkdir(path.Join(PluginFolder, "controller"), 0755); err != nil {
-			glog.Fatalf("Failed to create a controller's volumes folder with error: %v\n", err)
-		}
-	} else {
-		// Since "controller" folder exists, it means the plugin has already been running, it means
-		// there might be some volumes left, they must be re-inserted into scaleVolumes map
-		loadExVolumes()
-	}
-}
-
-// loadExVolumes check for any *.json files in the  PluginFolder/controller folder
-// and loads then into scaleVolumes map
-func loadExVolumes() {
-	glog.V(3).Infof("gpfs loadExVolumes")
-	scaleVol := scaleVolume{}
-	files, err := ioutil.ReadDir(path.Join(PluginFolder, "controller"))
-	if err != nil {
-		glog.Infof("scale: failed to read controller's volumes folder: %s error:%v", path.Join(PluginFolder, "controller"), err)
-		return
-	}
-	for _, f := range files {
-		if !strings.HasSuffix(f.Name(), ".json") {
-			continue
-		}
-		fp, err := os.Open(path.Join(PluginFolder, "controller", f.Name()))
-		if err != nil {
-			glog.Infof("scale: open file: %s err %v", f.Name(), err)
-			continue
-		}
-		decoder := json.NewDecoder(fp)
-		if err = decoder.Decode(&scaleVol); err != nil {
-			glog.Infof("scale: decode file: %s err: %v", f.Name(), err)
-			fp.Close()
-			continue
-		}
-		/*		scaleVolumes[scaleVol.VolID] = &scaleVol */
-	}
-	glog.Infof("scale: Loaded %d volumes from %s", len(scaleVolumes), path.Join(PluginFolder, "controller"))
-}
-
 func GetScaleDriver() *ScaleDriver {
 	glog.V(3).Infof("gpfs GetScaleDriver")
 	return &ScaleDriver{}
@@ -131,11 +77,10 @@ func NewControllerServer(d *ScaleDriver, connMap map[string]connectors.SpectrumS
 	}
 }
 
-func NewNodeServer(d *ScaleDriver, mounter *mount.SafeFormatAndMount) *ScaleNodeServer {
+func NewNodeServer(d *ScaleDriver) *ScaleNodeServer {
 	glog.V(3).Infof("gpfs NewNodeServer")
 	return &ScaleNodeServer{
-		Driver:  d,
-		Mounter: mounter,
+		Driver: d,
 	}
 }
 
@@ -185,7 +130,7 @@ func (driver *ScaleDriver) ValidateControllerServiceRequest(c csi.ControllerServ
 	return status.Error(codes.InvalidArgument, "Invalid controller service request")
 }
 
-func (driver *ScaleDriver) SetupScaleDriver(name, vendorVersion, nodeID string, mounter *mount.SafeFormatAndMount) error {
+func (driver *ScaleDriver) SetupScaleDriver(name, vendorVersion, nodeID string) error {
 	glog.V(3).Infof("gpfs SetupScaleDriver. name: %s, version: %v, nodeID: %s", name, vendorVersion, nodeID)
 	if name == "" {
 		return fmt.Errorf("Driver name missing")
@@ -205,24 +150,24 @@ func (driver *ScaleDriver) SetupScaleDriver(name, vendorVersion, nodeID string, 
 	vcam := []csi.VolumeCapability_AccessMode_Mode{
 		csi.VolumeCapability_AccessMode_MULTI_NODE_MULTI_WRITER,
 	}
-	driver.AddVolumeCapabilityAccessModes(vcam)
+	_ = driver.AddVolumeCapabilityAccessModes(vcam)
 
 	csc := []csi.ControllerServiceCapability_RPC_Type{
 		csi.ControllerServiceCapability_RPC_CREATE_DELETE_VOLUME,
 		csi.ControllerServiceCapability_RPC_PUBLISH_UNPUBLISH_VOLUME,
 	}
-	driver.AddControllerServiceCapabilities(csc)
+	_ = driver.AddControllerServiceCapabilities(csc)
 
 	ns := []csi.NodeServiceCapability_RPC_Type{}
-	driver.AddNodeServiceCapabilities(ns)
+	_ = driver.AddNodeServiceCapabilities(ns)
 
 	driver.ids = NewIdentityServer(driver)
-	driver.ns = NewNodeServer(driver, mounter)
+	driver.ns = NewNodeServer(driver)
 	driver.cs = NewControllerServer(driver, scmap, cmap, primary)
 	return nil
 }
 
-func (driver *ScaleDriver) PluginInitialize() (map[string]connectors.SpectrumScaleConnector, settings.ScaleSettingsConfigMap, settings.Primary, error) {
+func (driver *ScaleDriver) PluginInitialize() (map[string]connectors.SpectrumScaleConnector, settings.ScaleSettingsConfigMap, settings.Primary, error) { //nolint:funlen
 	glog.V(3).Infof("gpfs PluginInitialize")
 	scaleConfig := settings.LoadScaleConfigSettings()
 
@@ -258,7 +203,6 @@ func (driver *ScaleDriver) PluginInitialize() (map[string]connectors.SpectrumSca
 		scaleConnMap[clusterId] = sc
 
 		if cluster.Primary != (settings.Primary{}) {
-
 			scaleConnMap["primary"] = sc
 
 			// check if primary filesystem exists and mounted on atleast one node
@@ -329,7 +273,6 @@ func (driver *ScaleDriver) PluginInitialize() (map[string]connectors.SpectrumSca
 
 	glog.Infof("IBM Spectrum Scale: Plugin initialized")
 	return scaleConnMap, scaleConfig, primaryInfo, nil
-
 }
 
 func (driver *ScaleDriver) CreatePrimaryFileset(sc connectors.SpectrumScaleConnector, primaryFS string, fsmount string, filesetName string, inodeLimit string) (string, error) {
@@ -442,7 +385,7 @@ func (driver *ScaleDriver) ValidateScaleConfigParameters(scaleConfig settings.Sc
 		}
 
 		if cluster.Primary != (settings.Primary{}) {
-			if primaryClusterFound == true {
+			if primaryClusterFound {
 				return false, fmt.Errorf("More than one primary clusters specified")
 			}
 
@@ -453,7 +396,6 @@ func (driver *ScaleDriver) ValidateScaleConfigParameters(scaleConfig settings.Sc
 			}
 
 			rClusterForPrimaryFS = cluster.Primary.RemoteCluster
-
 		} else {
 			cl[i] = cluster.ID
 		}
