@@ -22,10 +22,10 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/IBM/ibm-spectrum-scale-csi-driver/csiplugin/connectors"
+	"github.com/IBM/ibm-spectrum-scale-csi-driver/csiplugin/utils"
 	"github.com/container-storage-interface/spec/lib/go/csi"
 	"github.com/golang/glog"
-	"github.com/mavin6618/ibm-spectrum-scale-csi-driver/csiplugin/connectors"
-	"github.com/mavin6618/ibm-spectrum-scale-csi-driver/csiplugin/utils"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
