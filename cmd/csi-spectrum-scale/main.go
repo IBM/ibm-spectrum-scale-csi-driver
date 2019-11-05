@@ -18,15 +18,15 @@ package main
 
 import (
 	"flag"
+	"math/rand"
 	"os"
 	"path"
 	"time"
-	"math/rand"
 
 	"github.com/golang/glog"
 
-	driver "github.com/IBM/ibm-spectrum-scale-csi-driver/csiplugin"
-	mountmanager "github.com/IBM/ibm-spectrum-scale-csi-driver/pkg/mount-manager"
+	driver "github.com/mavin6618/ibm-spectrum-scale-csi-driver/csiplugin"
+	mountmanager "github.com/mavin6618/ibm-spectrum-scale-csi-driver/pkg/mount-manager"
 )
 
 func init() {
@@ -34,9 +34,9 @@ func init() {
 }
 
 var (
-	endpoint   = flag.String("endpoint", "unix://tmp/csi.sock", "CSI endpoint")
-	driverName = flag.String("drivername", "csi-spectrum-scale", "name of the driver")
-	nodeID     = flag.String("nodeid", "", "node id")
+	endpoint      = flag.String("endpoint", "unix://tmp/csi.sock", "CSI endpoint")
+	driverName    = flag.String("drivername", "csi-spectrum-scale", "name of the driver")
+	nodeID        = flag.String("nodeid", "", "node id")
 	vendorVersion = "1.0.0"
 )
 
