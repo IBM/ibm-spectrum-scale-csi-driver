@@ -30,9 +30,9 @@ import (
 	"google.golang.org/grpc/status"
 	"k8s.io/kubernetes/pkg/util/mount"
 
-	"github.com/mavin6618/ibm-spectrum-scale-csi-driver/csiplugin/connectors"
-	"github.com/mavin6618/ibm-spectrum-scale-csi-driver/csiplugin/settings"
-	"github.com/mavin6618/ibm-spectrum-scale-csi-driver/csiplugin/utils"
+	"github.com/IBM/ibm-spectrum-scale-csi-driver/csiplugin/connectors"
+	"github.com/IBM/ibm-spectrum-scale-csi-driver/csiplugin/settings"
+	"github.com/IBM/ibm-spectrum-scale-csi-driver/csiplugin/utils"
 )
 
 // PluginFolder defines the location of scaleplugin
