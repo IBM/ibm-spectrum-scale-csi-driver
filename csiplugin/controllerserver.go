@@ -514,7 +514,6 @@ func (cs *ScaleControllerServer) CreateVolume(ctx context.Context, req *csi.Crea
 				VolumeContext: req.GetParameters(),
 			},
 		}, nil
-
 	}
 	/* If we reach here we need to create a volume */
 	var targetPath string
