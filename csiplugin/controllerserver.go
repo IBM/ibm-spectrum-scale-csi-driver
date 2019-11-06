@@ -811,7 +811,7 @@ func (cs *ScaleControllerServer) ControllerPublishVolume(ctx context.Context, re
 		isFsMounted = ispFsMounted
 	}
 
-	glog.V(4).Infof("ControllerPublishVolume : Mount Status Primaryfs [ %s ], Sourcefs [ %s ]", strconv.FormatBool(ispFsMounted), strconv.FormatBool(isFsMounted))
+	glog.V(4).Infof("ControllerPublishVolume : Mount Status Primaryfs [ %t ], Sourcefs [ %t ]", ispFsMounted, isFsMounted)
 	if isFsMounted && ispFsMounted {
 		glog.V(4).Infof("ControllerPublishVolume : %s and %s are mounted on %s so returning success", fsName, primaryfsName, scalenodeID)
 		return &csi.ControllerPublishVolumeResponse{}, nil
