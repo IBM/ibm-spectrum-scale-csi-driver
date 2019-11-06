@@ -58,7 +58,7 @@ func (cs *ScaleControllerServer) GetPriConnAndSLnkPath() (connectors.SpectrumSca
 	primaryConn, isprimaryConnPresent := cs.Driver.connmap["primary"]
 
 	if isprimaryConnPresent {
-		return primaryConn, cs.Driver.primary.SymlinkRelativePath, cs.Driver.primary.PrimaryFS, cs.Driver.primary.PrimaryFSMount, cs.Driver.primary.SymlinkAbsolutePath, cs.Driver.primary.PrimaryCid, nil
+		return primaryConn, cs.Driver.primary.SymlinkRelativePath, cs.Driver.primary.GetPrimaryFs(), cs.Driver.primary.PrimaryFSMount, cs.Driver.primary.SymlinkAbsolutePath, cs.Driver.primary.PrimaryCid, nil
 	}
 
 	return nil, "", "", "", "", "", status.Error(codes.Internal, "Primary connector not present in configMap")
@@ -514,7 +514,6 @@ func (cs *ScaleControllerServer) CreateVolume(ctx context.Context, req *csi.Crea
 				VolumeContext: req.GetParameters(),
 			},
 		}, nil
-
 	}
 	/* If we reach here we need to create a volume */
 	var targetPath string
@@ -690,16 +689,16 @@ func (cs *ScaleControllerServer) DeleteVolume(ctx context.Context, req *csi.Dele
 	} else {
 
 		/* Delete Dir for Lw volume */
-		err = primaryConn.DeleteDirectory(cs.Driver.primary.PrimaryFS, sLinkRelPath)
+		err = primaryConn.DeleteDirectory(cs.Driver.primary.GetPrimaryFs(), sLinkRelPath)
 		if err != nil {
-			return nil, status.Error(codes.Internal, fmt.Sprintf("Unable to Delete Dir using FS [%v] Relative SymLink [%v]", cs.Driver.primary.PrimaryFS, sLinkRelPath))
+			return nil, status.Error(codes.Internal, fmt.Sprintf("Unable to Delete Dir using FS [%v] Relative SymLink [%v]", cs.Driver.primary.GetPrimaryFs(), sLinkRelPath))
 		}
 	}
 
-	err = primaryConn.DeleteSymLnk(cs.Driver.primary.PrimaryFS, sLinkRelPath)
+	err = primaryConn.DeleteSymLnk(cs.Driver.primary.GetPrimaryFs(), sLinkRelPath)
 
 	if err != nil {
-		return nil, status.Error(codes.Internal, fmt.Sprintf("Unable to delete symlnk [%v:%v] Error [%v]", cs.Driver.primary.PrimaryFS, sLinkRelPath, err))
+		return nil, status.Error(codes.Internal, fmt.Sprintf("Unable to delete symlnk [%v:%v] Error [%v]", cs.Driver.primary.GetPrimaryFs(), sLinkRelPath, err))
 	}
 
 	return &csi.DeleteVolumeResponse{}, nil
@@ -783,7 +782,7 @@ func (cs *ScaleControllerServer) ControllerPublishVolume(ctx context.Context, re
 	}
 
 	//Check if primary filesystem is mounted.
-	primaryfsName := cs.Driver.primary.PrimaryFS
+	primaryfsName := cs.Driver.primary.GetPrimaryFs()
 	pfsMount, err := cs.Driver.connmap["primary"].GetFilesystemMountDetails(primaryfsName)
 	if err != nil {
 		glog.Errorf("ControllerPublishVolume : Error in getting filesystem mount details for %s", primaryfsName)
@@ -811,7 +810,7 @@ func (cs *ScaleControllerServer) ControllerPublishVolume(ctx context.Context, re
 		isFsMounted = ispFsMounted
 	}
 
-	glog.V(4).Infof("ControllerPublishVolume : Mount Status Primaryfs [ %s ], Sourcefs [ %s ]", ispFsMounted, isFsMounted)
+	glog.V(4).Infof("ControllerPublishVolume : Mount Status Primaryfs [ %s ], Sourcefs [ %s ]", strconv.FormatBool(ispFsMounted), strconv.FormatBool(isFsMounted))
 	if isFsMounted && ispFsMounted {
 		glog.V(4).Infof("ControllerPublishVolume : %s and %s are mounted on %s so returning success", fsName, primaryfsName, scalenodeID)
 		return &csi.ControllerPublishVolumeResponse{}, nil
