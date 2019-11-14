@@ -36,7 +36,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: ibm-spectrum-scale-csi-attacher-sa
-    namespace: default
+    namespace: $namespace
 roleRef:
   kind: ClusterRole
   name: ibm-spectrum-scale-csi-attacher-role

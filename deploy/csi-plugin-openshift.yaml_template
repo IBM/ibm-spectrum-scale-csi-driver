@@ -44,9 +44,6 @@ spec:
         - name: csi-spectrum-scale
           securityContext:
             privileged: true
-            capabilities:
-              add: ["SYS_ADMIN"]
-            allowPrivilegeEscalation: true
           image: $spectrumscaleplugin
           args :
             - "--nodeid=$(NODE_ID)"
@@ -70,7 +67,6 @@ spec:
               mountPath: /var/lib/kubelet/plugins/csi-spectrum-scale
             - name: pods-mount-dir
               mountPath: /var/lib/kubelet
-              mountPropagation: "Bidirectional"
             - name: spectrum-scale-config
               mountPath: /var/lib/ibm/config
             $cacertline1
