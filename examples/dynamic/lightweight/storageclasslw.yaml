@@ -2,7 +2,7 @@ apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
    name: csi-spectrum-scale-lt
-provisioner: csi-spectrum-scale
+provisioner: ibm-spectrum-scale-csi-provisioner
 parameters:
     volBackendFs: "gpfs0"
     volDirBasePath: "pvfileset/lwdir"
