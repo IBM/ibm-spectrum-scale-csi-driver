@@ -68,11 +68,11 @@ then
   exit 1
 fi
 
-# check if csi-spectrum-scale resources are running in specified namespace
-out=$($cmd describe StatefulSet csi-spectrum-scale-attacher 2>&1 | grep 'Namespace' | awk 'BEGIN { FS="[[:space:]]+" } ; { print $2 }')
+# check if ibm-spectrum-scale-csi resources are running in specified namespace
+out=$($cmd describe StatefulSet ibm-spectrum-scale-csi-attacher 2>&1 | grep 'Namespace' | awk 'BEGIN { FS="[[:space:]]+" } ; { print $2 }')
 if [[ $out != $ns ]]
 then
-  echo "csi-spectrum-scale is not running in namespace $ns. Please provide a valid namespace"
+  echo "ibm-spectrum-scale-csi is not running in namespace $ns. Please provide a valid namespace"
   exit 1
 fi
 
@@ -88,25 +88,25 @@ PRODUCT_NAME="ibm-spectrum-scale-csi"
 echo "Collecting \"$PRODUCT_NAME\" logs..."
 echo "The log files will be saved in the folder [$logdir]"
 
-csi_spectrum_scale_attacher_log_name=${logdir}/csi-spectrum-scale-attacher.log
-csi_spectrum_scale_provisioner_log_name=${logdir}/csi-spectrum-scale-provisioner.log
+csi_spectrum_scale_attacher_log_name=${logdir}/ibm-spectrum-scale-csi-attacher.log
+csi_spectrum_scale_provisioner_log_name=${logdir}/ibm-spectrum-scale-csi-provisioner.log
 
-describe_all_per_label=${logdir}/csi-spectrum-scale-describe-all-by-label
-get_all_per_label=${logdir}/csi-spectrum-scale-get-all-by-label
-get_configmap=${logdir}/csi-spectrum-scale-configmap
-get_k8snodes=${logdir}/csi-spectrum-scale-k8snodes
+describe_all_per_label=${logdir}/ibm-spectrum-scale-csi-describe-all-by-label
+get_all_per_label=${logdir}/ibm-spectrum-scale-csi-get-all-by-label
+get_configmap=${logdir}/ibm-spectrum-scale-csi-configmap
+get_k8snodes=${logdir}/ibm-spectrum-scale-csi-k8snodes
 
-echo "$klog StatefulSet/csi-spectrum-scale-attacher"
-$klog StatefulSet/csi-spectrum-scale-attacher > ${csi_spectrum_scale_attacher_log_name} 2>&1 || :
-echo "$klog StatefulSet/csi-spectrum-scale-provisioner"
-$klog StatefulSet/csi-spectrum-scale-provisioner > ${csi_spectrum_scale_provisioner_log_name} 2>&1 || :
+echo "$klog StatefulSet/ibm-spectrum-scale-csi-attacher"
+$klog StatefulSet/ibm-spectrum-scale-csi-attacher > ${csi_spectrum_scale_attacher_log_name} 2>&1 || :
+echo "$klog StatefulSet/ibm-spectrum-scale-csi-provisioner"
+$klog StatefulSet/ibm-spectrum-scale-csi-provisioner > ${csi_spectrum_scale_provisioner_log_name} 2>&1 || :
 
 # kubectl logs on csi pods
-for csi_pod in `$cmd get pod -l app=csi-spectrum-scale --namespace $ns | grep -v NAME | awk '{print $1}'`; do
+for csi_pod in `$cmd get pod -l app=ibm-spectrum-scale-csi --namespace $ns | grep -v NAME | awk '{print $1}'`; do
    echo "$klog pod/${csi_pod}"
-   $klog pod/${csi_pod} -c csi-spectrum-scale > ${logdir}/${csi_pod}.log 2>&1 || :
+   $klog pod/${csi_pod} -c ibm-spectrum-scale-csi > ${logdir}/${csi_pod}.log 2>&1 || :
    $klog pod/${csi_pod} -c driver-registrar > ${logdir}/${csi_pod}-driver-registrar.log 2>&1 || :
-   $klog pod/${csi_pod} -c csi-spectrum-scale --previous > ${logdir}/${csi_pod}-previous.log 2>&1 || :
+   $klog pod/${csi_pod} -c ibm-spectrum-scale-csi --previous > ${logdir}/${csi_pod}-previous.log 2>&1 || :
    $klog pod/${csi_pod} -c driver-registrar --previous > ${logdir}/${csi_pod}-driver-registrar-previous.log 2>&1 || :
 done
 
