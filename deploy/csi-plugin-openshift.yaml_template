@@ -42,8 +42,8 @@ spec:
             - name: registration-dir
               mountPath: /registration
         - name: ibm-spectrum-scale-csi
-          securityContext:
-            privileged: true
+          #securityContext:
+          #  privileged: true
           image: $spectrumscaleplugin
           args :
             - "--nodeid=$(NODE_ID)"
