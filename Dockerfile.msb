@@ -3,8 +3,8 @@
 FROM golang:1.13.1 AS builder
 WORKDIR /go/src/github.com/IBM/ibm-spectrum-scale-csi-driver/
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -o  _output/ibm-specturm-scale-csi ./cmd/ibm-specturm-scale-csi
-RUN chmod +x /ibm-specturm-scale-csi
+RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -o _output/ibm-specturm-scale-csi ./cmd/ibm-specturm-scale-csi
+RUN chmod +x _output/ibm-specturm-scale-csi
 
 FROM registry.access.redhat.com/ubi7-minimal:latest
 LABEL name="IBM Spectrum Scale CSI driver" \
