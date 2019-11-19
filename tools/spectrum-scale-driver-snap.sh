@@ -138,6 +138,13 @@ get_k8snodes_cmd="$cmd describe nodes"
 echo "$get_k8snodes_cmd"
 $get_k8snodes_cmd >> $get_k8snodes 2>&1 || :
 
+if [[ $cmd == "oc" ]]
+then
+   get_scc_cmd="$cmd describe scc csiaccess"
+   echo "$get_scc_cmd"
+   $get_scc_cmd > ${logdir}/${PRODUCT_NAME}-scc.log 2>&1 || :
+fi
+
 get_clusterinfo_cmd="$cmd cluster-info dump --namespaces kube-system --output-directory=$logdir"
 echo "$get_clusterinfo_cmd"
 out=$($get_clusterinfo_cmd 2>&1)
