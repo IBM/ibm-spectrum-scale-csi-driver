@@ -113,25 +113,25 @@ Pre-requisite: Docker 17.05 or higher is installed on local build machine.
 2. Invoke multi-stage build
 
    ```
-   docker build -t csi-spectrum-scale:v0.9.1 -f Dockerfile.msb .
+   docker build -t ibm-spectrum-scale-csi:v0.9.2 -f Dockerfile.msb .
    ```
 
    *On podman setup, use this command instead:*
 
    ```
-   podman build -t csi-spectrum-scale:v0.9.1 -f Dockerfile.msb .
+   podman build -t ibm-spectrum-scale-csi:v0.9.2 -f Dockerfile.msb .
    ```
 
 3. save the docker image
 
    ```
-   docker save csi-spectrum-scale:v0.9.1 -o csi-spectrum-scale_v0.9.1.tar
+   docker save ibm-spectrum-scale-csi:v0.9.2 -o ibm-spectrum-scale-csi_v0.9.2.tar
    ```
 
    *On podman setup, use this command instead:*
 
    ```
-   podman save csi-spectrum-scale:v0.9.1 -o csi-spectrum-scale_v0.9.1.tar
+   podman save ibm-spectrum-scale-csi:v0.9.2 -o ibm-spectrum-scale-csi_v0.9.2.tar
    ```
 
       A tar file of docker image will be stored under the _output directory.
@@ -143,13 +143,13 @@ Pre-requisite: Docker 17.05 or higher is installed on local build machine.
 1. Copy and load the docker image on all Kubernetes worker nodes
 
    ```
-   docker image load -i csi-spectrum-scale_v0.9.1.tar
+   docker image load -i ibm-spectrum-scale-csi_v0.9.2.tar
    ```
 
    *On OpenShift setup, use this command instead:*
 
    ```
-   podman image load -i csi-spectrum-scale_v0.9.1.tar
+   podman image load -i ibm-spectrum-scale-csi_v0.9.2.tar
    ```
 
 2. Deploy CSI driver
@@ -162,7 +162,7 @@ Pre-requisite: Docker 17.05 or higher is installed on local build machine.
 
    a. Update `deploy/spectrum-scale-driver.conf` with your cluster and environment details.
 
-   Note that on OpenShift setup, the image is listed as `localhost/csi-spectrum-scale:v0.9.1`. Change the value of "spectrumscaleplugin" parameter in images section accordingly. 
+   Note that on OpenShift setup, the image is listed as `localhost/ibm-spectrum-scale-csi:v0.9.2`. Change the value of "spectrumscaleplugin" parameter in images section accordingly. 
 
    b. Set the environment variable CSI_SCALE_PATH to ibm-spectrum-scale-csi-driver directory
 
@@ -185,9 +185,9 @@ Pre-requisite: Docker 17.05 or higher is installed on local build machine.
    ```
    % kubectl get pod
    NAME READY STATUS RESTARTS AGE
-   csi-spectrum-scale-7d8jg 2/2 Running 0 7s
-   csi-spectrum-scale-attacher-0 1/1 Running 0 8s
-   csi-spectrum-scale-provisioner-0 1/1 Running 0 8s
+   ibm-spectrum-scale-csi-7d8jg 2/2 Running 0 7s
+   ibm-spectrum-scale-csi-attacher-0 1/1 Running 0 8s
+   ibm-spectrum-scale-csi-provisioner-0 1/1 Running 0 8s
    ```
 
 
@@ -293,7 +293,7 @@ In order to deploy CSI driver on such a configuration, following steps should be
        secretName: secret2
    ```
 
-   Add corresponding entry under "containers -> csi-spectrum-scale -> volumeMounts" section:
+   Add corresponding entry under "containers -> ibm-spectrum-scale-csi -> volumeMounts" section:
 
    ```
    - name: secret2
@@ -342,7 +342,7 @@ In an environment where Kubernetes node names are different than the Spectrum Sc
 
 To use this feature, perform the following steps after running the installer "spectrum-scale-driver.py":
 
-- Add new environment variable in `deploy/csi-plugin.yaml` under container "*- name: csi-spectrum-scale*", where name of the environment variable is Kubernetes node name and value is the Spectrum Scale node name. 
+- Add new environment variable in `deploy/csi-plugin.yaml` under container "*- name: ibm-spectrum-scale-csi*", where name of the environment variable is Kubernetes node name and value is the Spectrum Scale node name. 
 
   ```
   env:
@@ -365,8 +365,8 @@ To use this feature, perform the following steps after running the installer "sp
 3. Find the CSI driver docker image and remove from all Kubernetes worker nodes
 
    ```
-   % docker images -a | grep csi-spectrum-scale
-   csi-spectrum-scale v0.9.1 465ca978127a 18 minutes ago 109MB
+   % docker images -a | grep ibm-spectrum-scale-csi
+   ibm-spectrum-scale-csi v0.9.2 465ca978127a 18 minutes ago 109MB
 
    % docker rmi 465ca978127a
    ```
