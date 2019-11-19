@@ -69,7 +69,8 @@ def validatePluginConf(conf_dict):
              exit(1)
 
         if conf_dict.get("namespace") == "" or conf_dict.get("namespace") == None:
-             conf_dict["namespace"] = "default"
+             print "Mandatory parameter 'namespace' in PLUGIN section missing"
+             exit(1)
 
 def validateImages(conf_dict):
         if conf_dict.get("provisioner") == "" or conf_dict.get("provisioner") == None:
@@ -166,10 +167,8 @@ def generateDeployScript(cmd, config, deployscript, deploybasepath):
 
            # Create an scc only in case of openshift
            if cmd == "oc":
-                namespace = dict(config.items("PLUGIN")).get("namespace")
-                if namespace != "default" and namespace != "" and namespace != None:
-                    f.write(cmd + " apply -f " + os.path.join(deploybasepath, "csi-plugin-scc.yaml"))
-                    f.write("\n")
+                f.write(cmd + " apply -f " + os.path.join(deploybasepath, "csi-plugin-scc.yaml"))
+                f.write("\n")
            f.write("\n")
 
            f.write(cmd + " apply -f " + os.path.join(deploybasepath, "spectrum-scale-secret.json"))
@@ -206,10 +205,8 @@ def generateDestroyScript(cmd, config, destroyscript, deploybasepath):
 
            # Delete scc in case of openshift
            if cmd == "oc":
-                namespace = dict(config.items("PLUGIN")).get("namespace")
-                if namespace != "default" and namespace != "" and namespace != None:
-                    f.write(cmd + " delete -f " + os.path.join(deploybasepath, "csi-plugin-scc.yaml"))
-                    f.write("\n") 
+                f.write(cmd + " delete -f " + os.path.join(deploybasepath, "csi-plugin-scc.yaml"))
+                f.write("\n") 
            f.write("\n") 
 
            f.write(cmd + " delete -f " + os.path.join(deploybasepath, "spectrum-scale-secret.json"))
@@ -277,9 +274,8 @@ if conf_dict.get("openshiftdeployment") == "true" :
                                   os.path.join(deploybasepath, "csi-plugin-attacher.yaml"))
     print "Configured '" + deploybasepath + "/csi-plugin-attacher.yaml'"
 
-    if conf_dict.get("namespace") != "default" and conf_dict.get("namespace") != "" and conf_dict.get("namespace") != None:
-        configureDriver(conf_dict, os.path.join(deploybasepath, "csi-plugin-scc.yaml_template"),
-                          os.path.join(deploybasepath, "csi-plugin-scc.yaml"))
+    configureDriver(conf_dict, os.path.join(deploybasepath, "csi-plugin-scc.yaml_template"),
+                      os.path.join(deploybasepath, "csi-plugin-scc.yaml"))
 else:
     cmd = "kubectl"
 
