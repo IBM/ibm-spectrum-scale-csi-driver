@@ -22,7 +22,6 @@ IMAGE_NAME=$(NAME)
 all: $NAME
 
 $NAME:
-	if [ ! -d ./vendor ]; then go mod vendor; fi
 	CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -o  _output/$(NAME) ./cmd/ibm-spectrum-scale-csi
 
 build-image: $NAME
