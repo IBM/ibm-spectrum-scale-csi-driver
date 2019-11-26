@@ -83,8 +83,8 @@ echo "INFO: Successfully created ${volname}.yaml"
 }
 
 
-SHORT=hf:l:s:p:c:
-LONG=help,filesystem:,linkpath:,size:,pvname:,storageclass:
+SHORT=hf:l:s:p:c:a:
+LONG=help,filesystem:,linkpath:,size:,pvname:,storageclass:,accessmode:
 ERROROUT="/tmp/csierror.out"
 OPTS=$(getopt --options $SHORT --long $LONG --name "$0" -- "$@")
 
