@@ -178,7 +178,7 @@ fi
 
 if ! [[ "$ACCESSMODE" == "ReadWriteMany" || "$ACCESSMODE" == "ReadWriteOnce" ]]
 then
-        echo "ERROR: Invalid access mpde specified. Valid accessmode are : ReadWriteMany and ReadWriteOnce."
+        echo "ERROR: Invalid access mode specified. Valid accessmode are ReadWriteMany and ReadWriteOnce."
         exit 2
 fi
 
