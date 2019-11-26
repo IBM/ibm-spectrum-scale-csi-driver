@@ -237,7 +237,7 @@ fi
 VolumeHandle="${clusterID};${fileSystemID};path=${VOLPATH}"
 
 # Gererate yaml file
-generate_yaml "${VolumeHandle}" "${VOLNAME}" "${VOLSIZE}"
+generate_yaml "${VolumeHandle}" "${VOLNAME}" "${VOLSIZE}" "${ACCESSMODE}"
 
 rm -f ${ERROROUT}
 exit 0
