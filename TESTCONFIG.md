@@ -14,8 +14,6 @@
 |OS | RHEL 7.6, RHEL7.7 worker nodes | |
 |Kubernetes | 1.13,1.14,1.15,1.16 | |
 |Docker | 18.03, 18.06 | |
-|Calico | 3.7, 3.8.2 | |
-|Weave | 2.5.2 | |
 |OpenShift | 4.2 | |
 
   
@@ -26,7 +24,7 @@
 
   
 
-All examples below consider a non-production Beta test environment:
+All examples below consider a non-production test environment:
 
   
 
