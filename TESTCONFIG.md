@@ -10,13 +10,13 @@
 
 |Component | Level |Comments |
 |--|--|--|
-|Spectrum Scale | 5.0.3.3 | x86_64 |
-|OS | RHEL 7.6 | |
-|Kubernetes | 1.15 | |
+|Spectrum Scale | 5.0.4.1 | x86_64 |
+|OS | RHEL 7.6, RHEL7.7 worker nodes | |
+|Kubernetes | 1.13,1.14,1.15,1.16 | |
 |Docker | 18.03, 18.06 | |
 |Calico | 3.7, 3.8.2 | |
 |Weave | 2.5.2 | |
-|OpenShift | 4.1 | *not fully qualified (see listed limitations*) |
+|OpenShift | 4.2 | |
 
   
 
@@ -41,7 +41,7 @@ This environment assumes a minimum number of nodes to perform goodpath testing. 
 | **Master node** | 1x | 2core | 8GB | 50GB | do not install | required |
 | **Worker node** | 2x | 2core | 16GB | 50GB | required | required |
 | **GUI node** | 1x | 2core | 16GB | 50GB | required | do not install |
-| **NSD node** | 2x | 2core | 8GB | 50GB | required | optional |
+| **NSD node** | 2x | 2core | 8GB | 50GB | required | not recommended  |
 
   
 
@@ -55,34 +55,6 @@ This environment assumes a minimum number of nodes to perform goodpath testing. 
 
 - NSD nodes with shared disks (8x 10GB) for NSD and file system creation.  Boost memory and cpu cores on NSD nodes if stacking K8s / Scale functionality
 
-  
-
-### Baremetal cluster testbed
-
-This environment assumes a minimum number of nodes to perform both goodpath and error inject testing.
-
-  
-
-| Node Type | # | Cores | RAM | HD | Spectrum Scale | K8s |
-|--|--|--|--|--|--|--|
-| **Master node** | 3x | 8core | 64GB | 300GB | do not install | required |
-| **Worker node** | 3x | 8core | 128GB | 300GB | required | required |
-| **GUI node** | 1x | 4core | 32GB | 300GB | required | do not install |
-| **NSD node** | 2x | 4core | 32GB | 300GB | required | optional |
-
-  
-
-- pagepool set to 32GB on workers, 8GB on NSD and GUI
-
-- No other Spectrum Scale functions installed
-
-- Do not install Spectrum Scale on the Master nodes
-
-- Do not install Kubernetes on the GUI node
-
-- NSD nodes with shared disks (8x 100GB) for NSD and file system creation. Boost memory and cpu cores on NSD nodes if stacking K8s / Scale functionality
-
-  
 
 ### OpenShift VMware testbed
 
@@ -92,10 +64,11 @@ This environment assumes a minimum number of nodes to perform goodpath testing. 
 
 | Node Type | # | Cores | RAM | HD | Spectrum Scale | K8s |
 |--|--|--|--|--|--|--|
-| **Master node** | 3x | 2core | 32GB | 50GB | do not install | required |
-| **Worker node** | 3x | 2core | 32GB | 50GB | required | required |
+| **Master node** | 3x | 4core | 16GB | 120GB | do not install | required |
+| **Infrastructure node** | 3x | 4core | 16GB | 120GB | required | required |
+| **Worker node** | 3x | 2core | 16GB | 120GB | required | required |
 | **GUI node** | 1x | 2core | 16GB | 50GB | required | do not install |
-| **NSD node** | 2x | 2core | 16GB | 50GB | required | optional |
+| **NSD node** | 2x | 2core | 16GB | 50GB | required | not recommended |
 
   
 
@@ -105,7 +78,7 @@ This environment assumes a minimum number of nodes to perform goodpath testing. 
 
 - Master nodes will run RHCOS. Spectrum Scale is not supported on RHCOS nodes. Do not install Spectrum Scale on the master nodes.
 
-- Do not install Kubernetes on the GUI node
+- Do not add Spectrum Scale GUI node to Openshift cluster 
 
 - NSD nodes with shared disks (8x 10GB) for NSD and file system creation. Boost memory on NSD nodes if stacking K8s / Scale functionality
 
@@ -119,10 +92,11 @@ This environment assumes a minimum number of nodes to perform goodpath testing. 
 
 | Node Type | # | Cores | RAM | HD | Spectrum Scale | K8s |
 |--|--|--|--|--|--|--|
-| **Master node** | 3x | 2core | 64GB | 50GB | do not install | required |
-| **Worker node** | 3x | 2core | 128GB | 50GB | required | required |
+| **Master node** | 3x | 2core | 64GB | 120GB | do not install | required |
+| **Infrastructure node** | 3x | 4core | 64GB | 120GB | required | required |
+| **Worker node** | 3x | 2core | 128GB | 120GB | required | required |
 | **GUI node** | 1x | 2core | 32GB | 50GB | required | do not install |
-| **NSD node** | 2x | 2core | 32GB | 50GB | required | optional
+| **NSD node** | 2x | 2core | 32GB | 50GB | required | not recommended |
 
   
 
@@ -132,7 +106,7 @@ This environment assumes a minimum number of nodes to perform goodpath testing. 
 
 - Master nodes will run RHCOS. Spectrum Scale is not supported on RHCOS nodes. Do not install Spectrum Scale on the master nodes.
 
-- Do not install Kubernetes on the GUI node
+- Do not add Spectrum Scale GUI node to Openshift cluster
 
 - NSD nodes with shared disks (8x 100GB) for NSD and file system creation.  Boost memory and cpu cores on NSD nodes if stacking K8s / Scale functionality
 
@@ -172,7 +146,6 @@ This example assumes 7 nodes. Kubernetes will be installed after the Spectrum Sc
 
 xfs_info /
 
-  
 
 meta-data=/dev/mapper/rhel-root isize=512 agcount=4, agsize=15269632 blks
 
@@ -203,12 +176,9 @@ realtime =none extsz=4096 blocks=0, rtextents=0
 ```
 
 systemctl status firewalld
-
 systemctl stop firewalld
-
 systemctl disable firewalld
 
-  
 
 setenforce 0
 
@@ -226,7 +196,7 @@ SELINUX=disabled
 
 ```
 
-./Spectrum_Scale_Data_Management-5.0.3.3-x86_64-Linux-install
+./Spectrum_Scale_Data_Management-5.0.4.1-x86_64-Linux-install
 
 ```
 
@@ -236,7 +206,7 @@ SELINUX=disabled
 
 ```
 
-cd /usr/lpp/mmfs/5.0.3.3/installer
+cd /usr/lpp/mmfs/5.0.4.1/installer
 
 ```
 
@@ -453,10 +423,6 @@ mmchfs fs2 -Q yes
   
 
 An intersection of Spectrum Scale and Kubernetes now exists. The Kubernetes Master node does not have Spectrum Scale installed upon it, thus giving it maximum cpu/memory resources for managing the K8s cluster. The Kubernetes Worker nodes are also Spectrum Scale nodes. The GUI and NSD nodes have Spectrum Scale installed and are part of the Spectrum Scale cluster, but are not part of the Kubernetes cluster. The CSI driver will run on the Worker nodes. Because all Worker nodes have Spectrum Scale installed, the pods on all worker nodes will have access to PVC mounts to the underlying Spectrum Scale file system. 
-
-  
-
-  
 
   
 
