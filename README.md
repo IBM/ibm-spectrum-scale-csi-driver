@@ -12,7 +12,6 @@
          * [Storageclass](#storageClass)
       * [Environments in Test](TESTCONFIG.md#environments-in-test)
       * [Example Hardware Configs](TESTCONFIG.md#example-hardware-configs)
-      * [Example of using the Install Toolkit to build a IBM Spectrum Scale cluster for testing the CSI driver](TESTCONFIG.md#example-of-using-the-install-toolkit-to-build-a-spectrum-scale-cluster-for-testing-the-csi-driver)
       * [Links](#links)
 
   

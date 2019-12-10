@@ -124,7 +124,7 @@ Main starting page for all Spectrum Scale compatibility information.
   
 
 [IBM Spectrum Scale Protocols Quick Overview](https://www.ibm.com/developerworks/community/wikis/home?lang=en#!/wiki/fa32927c-e904-49cc-a4cc-870bcc8e307c/page/Protocols%20Quick%20Overview%20for%20IBM%20Spectrum%20Scale)
-Guide showing how to quickly install a Spectrum Scale cluster. Information similar to the above Install Toolkit example.
+Guide showing how to quickly install a Spectrum Scale cluster.
 
   
 
