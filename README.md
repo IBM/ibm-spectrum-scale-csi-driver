@@ -87,7 +87,9 @@ Pre-requisite: Docker 17.05 or higher is installed on local build machine.
 
 
 
+
 ## Install and Deploy the IBM Spectrum Scale CSI driver
+
 
 1. Copy and load the docker image on all Kubernetes worker nodes
 
