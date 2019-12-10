@@ -20,7 +20,9 @@ echo "Usage: $0
                 -f|--filesystem <Name of Volume's Source Filesystem>
                 -l|--linkpath <full Path of Volume in Primary Filesystem>
                 -s|--size <size in GB>
-                [-p|--pvname <name for pv>
+                [-p|--pvname <name for pv>]
+                [-c|--storageclass <StorageClass for pv>]
+                [-a|--accessmode <AccessMode for pv>]
                 [-h|--help] " 1>&2; exit 1; }
 
 fullUsage(){
@@ -28,7 +30,9 @@ echo "Usage: $0
 		-f|--filesystem <Name of Volume's Source Filesystem>
 		-l|--linkpath <full Path of Volume in Primary Filesystem>
 		-s|--size <size in GB>
-        	[-p|--pvname <name for pv> 
+		[-p|--pvname <name for pv>]
+                [-c|--storageclass <StorageClass for pv>]
+                [-a|--accessmode <AccessMode for pv>]
 		[-h|--help] 
 		
 
@@ -52,6 +56,7 @@ generate_yaml()
 volhandle=$1
 volname=$2
 volsize=$3
+accessmode=$4
 if [[ -f "${volname}.yaml" ]]; then
     echo "ERROR: File ${volname}.yaml already exist"
     exit 2
@@ -67,18 +72,19 @@ spec:
   capacity:
     storage: ${volsize}Gi
   accessModes:
-    - ReadWriteMany
+    - ${accessmode}
   csi:
-    driver: csi-spectrum-scale
+    driver: ibm-spectrum-scale-csi
     volumeHandle: ${volhandle}
+  ${STORAGECLASS}
 EOL
 echo "INFO: volumeHandle: ${volhandle}"
 echo "INFO: Successfully created ${volname}.yaml"
 }
 
 
-SHORT=hf:l:s:p:
-LONG=help,filesystem:,linkpath:,size:,pvname:
+SHORT=hf:l:s:p:c:a:
+LONG=help,filesystem:,linkpath:,size:,pvname:,storageclass:,accessmode:
 ERROROUT="/tmp/csierror.out"
 OPTS=$(getopt --options $SHORT --long $LONG --name "$0" -- "$@")
 
@@ -106,6 +112,14 @@ while true ; do
       ;;
     -p | --pvname )
       VOLNAME="$2"
+      shift 2
+      ;;
+    -c | --storageclass )
+      CLASS="$2"
+      shift 2
+      ;;
+    -a | --accessmode )
+      ACCESSMODE="$2"
       shift 2
       ;;
     -- )
@@ -162,6 +176,24 @@ if ! [[ "${VOLNAME}" =~ ^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z
         exit 2
 fi
 
+if ! [[ "$ACCESSMODE" == "ReadWriteMany" || "$ACCESSMODE" == "ReadWriteOnce" ]]
+then
+        echo "ERROR: Invalid access mode specified. Valid accessmode are ReadWriteMany and ReadWriteOnce."
+        exit 2
+fi
+
+[[ -z "${ACCESSMODE}" ]] && ACCESSMODE="ReadWriteMany"
+
+STORAGECLASS=""
+if ! [[ -z "${CLASS}" ]] ; then
+	if ! [[ "${CLASS}" =~ ^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$ ]]; then
+		echo "ERROR: Invalid storageClass name specified. storageClass name must satisfy DNS-1123 label requirement."
+		exit 2
+	fi
+	STORAGECLASS="storageClassName: ${CLASS}"
+fi
+
+
 # Check if this is spectrum scale node
 if [[ ! -f /usr/lpp/mmfs/bin/mmlscluster ]] ; then
     echo "ERROR: Spectrum Scale cli's are not present on this node"
@@ -205,7 +237,7 @@ fi
 VolumeHandle="${clusterID};${fileSystemID};path=${VOLPATH}"
 
 # Gererate yaml file
-generate_yaml "${VolumeHandle}" "${VOLNAME}" "${VOLSIZE}"
+generate_yaml "${VolumeHandle}" "${VOLNAME}" "${VOLSIZE}" "${ACCESSMODE}"
 
 rm -f ${ERROROUT}
 exit 0
