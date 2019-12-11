@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi7-minimal:latest
+FROM registry.access.redhat.com/ubi8-minimal:latest
 LABEL name="IBM Spectrum Scale CSI driver" \
       vendor="ibm" \
       version="1.0.1" \
