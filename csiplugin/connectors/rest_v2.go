@@ -139,7 +139,15 @@ func NewSpectrumRestV2(scaleConfig settings.Clusters) (SpectrumScaleConnector, e
 		glog.V(4).Infof("Created Spectrum Scale connector without SSL mode for %v", guiHost)
 	}
 
-	return &spectrumRestV2{httpClient: &http.Client{Transport: tr}, endpoint: endpoint, user: guiUser, password: guiPwd}, nil
+	return &spectrumRestV2{
+		httpClient: &http.Client{
+			Transport: tr,
+			Timeout:   time.Second * 10,
+		},
+		endpoint: endpoint,
+		user:     guiUser,
+		password: guiPwd,
+	}, nil
 }
 
 func (s *spectrumRestV2) GetClusterId() (string, error) {
@@ -459,14 +467,14 @@ func (s *spectrumRestV2) MakeDirectory(filesystemName string, relativePath strin
 	return nil
 }
 
-func (s *spectrumRestV2) SetFilesetQuota(filesystemName string, filesetName string, quota string, softquota string) error {
-	glog.V(4).Infof("rest_v2 SetFilesetQuota. filesystem: %s, fileset: %s, quota: %s, softquota: %s", filesystemName, filesetName, quota, softquota)
+func (s *spectrumRestV2) SetFilesetQuota(filesystemName string, filesetName string, quota string) error {
+	glog.V(4).Infof("rest_v2 SetFilesetQuota. filesystem: %s, fileset: %s, quota: %s", filesystemName, filesetName, quota)
 
 	setQuotaURL := utils.FormatURL(s.endpoint, fmt.Sprintf("scalemgmt/v2/filesystems/%s/quotas", filesystemName))
 	quotaRequest := SetQuotaRequest_v2{}
 
 	quotaRequest.BlockHardLimit = quota
-	quotaRequest.BlockSoftLimit = softquota
+	quotaRequest.BlockSoftLimit = quota
 	quotaRequest.OperationType = "setQuota"
 	quotaRequest.QuotaType = "fileset"
 	quotaRequest.ObjectName = filesetName
