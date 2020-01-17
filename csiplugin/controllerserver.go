@@ -799,7 +799,7 @@ func (cs *ScaleControllerServer) ControllerPublishVolume(ctx context.Context, re
 		prefix := utils.GetEnv("SCALE_NODE_MAPPING_PREFIX", "K8SIP_")
 		scalenodeID = utils.GetEnv(prefix+nodeID, "NOT_FOUND")
 		if scalenodeID == "NOT_FOUND" {
-			glog.V(4).Infof("ControllerPublishVolume : scale node mapping not found for %s", prefix+nodeID)
+			glog.V(4).Infof("ControllerPublishVolume : scale node mapping not found for %s using %s", prefix+nodeID, nodeID)
 			scalenodeID = nodeID
 		}
 	}
