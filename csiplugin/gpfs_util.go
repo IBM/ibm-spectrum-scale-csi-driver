@@ -142,7 +142,6 @@ func getScaleVolumeOptions(volOptions map[string]string) (*scaleVolume, error) {
 		} else if fsType == "independent" {
 			if isparentFilesetSpecified {
 				return &scaleVolume{}, status.Error(codes.InvalidArgument, "parentFileset and fileseType=independent specified in storageClass must not be specified together")
-
 			}
 		} else {
 			return &scaleVolume{}, status.Error(codes.InvalidArgument, "Invalid value specified for filesetType in storageClass")

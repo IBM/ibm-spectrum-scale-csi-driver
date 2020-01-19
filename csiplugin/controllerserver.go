@@ -218,7 +218,6 @@ func (cs *ScaleControllerServer) GetTargetPathforFset(scVol *scaleVolume) (strin
 }
 
 func (cs *ScaleControllerServer) CreateFilesetBasedVol(scVol *scaleVolume) (string, error) { //nolint:gocyclo,funlen
-
 	opt := make(map[string]interface{})
 
 	isFsMounted, err := scVol.Connector.IsFilesystemMounted(scVol.VolBackendFs)
