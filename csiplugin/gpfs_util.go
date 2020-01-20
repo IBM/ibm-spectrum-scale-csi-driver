@@ -59,7 +59,7 @@ type scaleVolId struct {
 	IsFilesetBased bool
 }
 
-func getScaleVolumeOptions(volOptions map[string]string) (*scaleVolume, error) {
+func getScaleVolumeOptions(volOptions map[string]string) (*scaleVolume, error) { //nolint:gocyclo,funlen
 	//var err error
 	scaleVol := &scaleVolume{}
 
