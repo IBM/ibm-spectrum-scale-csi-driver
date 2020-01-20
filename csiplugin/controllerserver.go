@@ -793,7 +793,7 @@ func (cs *ScaleControllerServer) ControllerPublishVolume(ctx context.Context, re
 	}
 
 	// Node mapping check
-	cont notFoundString = "NOT_FOUND"
+	const notFoundString = "NOT_FOUND"
 	scalenodeID := utils.GetEnv(nodeID, notFoundString)
 	// Additional node mapping check in case of k8s node id is IP address.
 	if scalenodeID == notFoundString {
