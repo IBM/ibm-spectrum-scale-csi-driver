@@ -96,6 +96,10 @@ func getScaleVolumeOptions(volOptions map[string]string) (*scaleVolume, error) {
 		volDirPathSpecified = false
 	}
 
+	if !fsTypeSpecified && !volDirPathSpecified {
+		return &scaleVolume{}, status.Error(codes.InvalidArgument, "Either filesetType or volDirBasePath must be specified in storageClass")
+	}
+
 	if clusterIdSpecified && clusterId == "" {
 		clusterIdSpecified = false
 	}
@@ -137,7 +141,7 @@ func getScaleVolumeOptions(volOptions map[string]string) (*scaleVolume, error) {
 	if fsTypeSpecified {
 		if fsType == "dependent" {
 			if inodeLimSpecified {
-				return &scaleVolume{}, status.Error(codes.InvalidArgument, "inodeLimit and fileseType=dependent specified in storageClass must not be specified together")
+				return &scaleVolume{}, status.Error(codes.InvalidArgument, "inodeLimit and fileseType dependent must not be specified together in storageClass")
 			}
 		} else if fsType == "independent" {
 			if isparentFilesetSpecified {
@@ -148,12 +152,11 @@ func getScaleVolumeOptions(volOptions map[string]string) (*scaleVolume, error) {
 		}
 	}
 
-	if !fsTypeSpecified && !volDirPathSpecified {
-		return &scaleVolume{}, status.Error(codes.InvalidArgument, "Either filesetType or volDirBasePath must be specified in storageClass")
-	}
-
 	if fsTypeSpecified && inodeLimSpecified {
-		inodelimit, _ := strconv.Atoi(inodeLim)
+		inodelimit, err := strconv.Atoi(inodeLim)
+		if err != nil {
+			return &scaleVolume{}, status.Error(codes.InvalidArgument, "Invalid value specified for inodeLimit in storageClass")
+		}
 		if inodelimit < 1024 {
 			return &scaleVolume{}, status.Error(codes.InvalidArgument, "inodeLimit specified in storageClass must be equal to or greater than 1024")
 		}
