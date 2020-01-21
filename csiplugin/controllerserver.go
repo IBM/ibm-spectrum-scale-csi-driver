@@ -32,8 +32,9 @@ import (
 )
 
 const (
-	no  = "no"
-	yes = "yes"
+	no       = "no"
+	yes      = "yes"
+	notFound = "NOT_FOUND"
 )
 
 type ScaleControllerServer struct {
@@ -793,13 +794,12 @@ func (cs *ScaleControllerServer) ControllerPublishVolume(ctx context.Context, re
 	}
 
 	// Node mapping check
-	const notFoundString = "NOT_FOUND"
-	scalenodeID := utils.GetEnv(nodeID, notFoundString)
-	// Additional node mapping check in case of k8s node id is IP address.
-	if scalenodeID == notFoundString {
-		prefix := utils.GetEnv("SCALE_NODE_MAPPING_PREFIX", "K8SIP_")
-		scalenodeID = utils.GetEnv(prefix+nodeID, notFoundString)
-		if scalenodeID == notFoundString {
+	scalenodeID := utils.GetEnv(nodeID, notFound)
+	// Additional node mapping check in case of k8s node id start with number.
+	if scalenodeID == notFound {
+		prefix := utils.GetEnv("SCALE_NODE_MAPPING_PREFIX", "K8sNodePrefix_")
+		scalenodeID = utils.GetEnv(prefix+nodeID, notFound)
+		if scalenodeID == notFound {
 			glog.V(4).Infof("ControllerPublishVolume : scale node mapping not found for %s using %s", prefix+nodeID, nodeID)
 			scalenodeID = nodeID
 		}
