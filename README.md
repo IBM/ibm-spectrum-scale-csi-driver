@@ -140,7 +140,7 @@ Storageclass defines what type of backend volume should be created by dynamic pr
  - **volDirBasePath**: Base directory path relative to the filesystem mount point under which directory based volumes should be created. If specified, the storageClass is used for directory based (lightweight) volume creation.
  - **uid**: UID with which the volume should be created. Optional
  - **gid**: UID with which the volume should be created. Optional
- - **filesetType**: Type of fileset. Valid values are "independent" or "dependent".
+ - **filesetType**: Type of fileset. Valid values are "independent" or "dependent". Default: independent
  - **parentFileset**: Specifies the parent fileset under which dependent fileset should be created.
  - **inodeLimit**: Inode limit for fileset based volumes. If not specified, default IBM Spectrum Scale inode limit of 1 million is used.
  
