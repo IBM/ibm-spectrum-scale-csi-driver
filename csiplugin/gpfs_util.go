@@ -29,6 +29,11 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+const (
+	dependentFileset   = "dependent"
+	independentFileset = "independent"
+)
+
 type scaleVolume struct {
 	VolName            string                            `json:"volName"`
 	VolSize            uint64                            `json:"volSize"`
@@ -98,7 +103,7 @@ func getScaleVolumeOptions(volOptions map[string]string) (*scaleVolume, error) {
 
 	if !fsTypeSpecified && !volDirPathSpecified {
 		fsTypeSpecified = true
-		fsType = "independent"
+		fsType = independentFileset
 	}
 
 	if clusterIdSpecified && clusterId == "" {
@@ -139,11 +144,11 @@ func getScaleVolumeOptions(volOptions map[string]string) (*scaleVolume, error) {
 	}
 
 	if fsTypeSpecified {
-		if fsType == "dependent" {
+		if fsType == dependentFileset {
 			if inodeLimSpecified {
 				return &scaleVolume{}, status.Error(codes.InvalidArgument, "inodeLimit and fileseType=dependent must not be specified together in storageClass")
 			}
-		} else if fsType == "independent" {
+		} else if fsType == independentFileset {
 			if isparentFilesetSpecified {
 				return &scaleVolume{}, status.Error(codes.InvalidArgument, "parentFileset and fileseType=independent(Default) must not be specified together in storageClass")
 			}
