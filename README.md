@@ -1,3 +1,6 @@
+# WARNING THIS REPOSITORY HAS BEEN MOVED!
+https://github.com/IBM/ibm-spectrum-scale-csi
+
 
    * [IBM Spectrum Scale Container Storage Interface (CSI) Driver](#ibm-spectrum-scale-container-storage-interface-csi-driver)
       * [IBM Spectrum Scale Introduction](#ibm-spectrum-scale-introduction)
