@@ -160,7 +160,6 @@ func (driver *ScaleDriver) SetupScaleDriver(name, vendorVersion, nodeID string) 
 
 	ns := []csi.NodeServiceCapability_RPC_Type{}
 	_ = driver.AddNodeServiceCapabilities(ns)
-
 	driver.ids = NewIdentityServer(driver)
 	driver.ns = NewNodeServer(driver)
 	driver.cs = NewControllerServer(driver, scmap, cmap, primary)

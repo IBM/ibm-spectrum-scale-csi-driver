@@ -483,7 +483,6 @@ func (s *spectrumRestV2) MakeDirectory(filesystemName string, relativePath strin
 		glog.Errorf("Unable to make directory %s: %v.", relativePath, err)
 		return err
 	}
-
 	return nil
 }
 
@@ -756,7 +755,6 @@ func (s *spectrumRestV2) GetFileSetNameFromId(filesystemName string, Id string) 
 	if len(getFilesetResponse.Filesets) == 0 {
 		return "", nil
 	}
-
 	return getFilesetResponse.Filesets[0].FilesetName, nil
 }
 

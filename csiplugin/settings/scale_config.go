@@ -136,7 +136,6 @@ func HandleSecretsAndCerts(cmap *ScaleSettingsConfigMap) error {
 			file_s = strings.TrimSpace(file_s)
 			file_s = strings.TrimSuffix(file_s, "\n")
 			cmap.Clusters[i].MgmtUsername = file_s
-
 			pwdPath := path.Join(SecretBasePath, cmap.Clusters[i].Secrets, "password")
 			file, e = ioutil.ReadFile(pwdPath)
 			if e != nil {
