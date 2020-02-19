@@ -1,3 +1,7 @@
+# WARNING THIS REPOSITORY HAS BEEN MOVED!
+https://github.com/IBM/ibm-spectrum-scale-csi
+
+
 
    * [IBM Spectrum Scale Container Storage Interface (CSI) Driver](#ibm-spectrum-scale-container-storage-interface-csi-driver)
       * [IBM Spectrum Scale Introduction](#ibm-spectrum-scale-introduction)
@@ -53,7 +57,6 @@ Please refer to [IBM Spectrum Scale Knowledge Center](https://www.ibm.com/suppor
 Please refer to [IBM Spectrum Scale Knowledge Center](https://www.ibm.com/support/knowledgecenter/en/STXKQY/ibmspectrumscale_welcome.html) for install pre-requisites.
 
 ## Building the docker image
-
 
 **Using multi-stage build**
 
@@ -138,11 +141,11 @@ Storageclass defines what type of backend volume should be created by dynamic pr
 
  - **volBackendFs**: Filesystem on which the volume should be created. This is a mandatory parameter.
  - **clusterId**: Cluster ID on which the volume should be created. 
- - **volDirBasePath**: Base directory path relative to the filesystem mount point under which directory based volumes should be created. If specified, the storageClass is used for directory based (lightweight) volume creation. If not specified, storageClass creates fileset based volumes.
+ - **volDirBasePath**: Base directory path relative to the filesystem mount point under which directory based volumes should be created. If specified, the storageClass is used for directory based (lightweight) volume creation.
  - **uid**: UID with which the volume should be created. Optional
  - **gid**: UID with which the volume should be created. Optional
- - **filesetType**: Type of fileset. Valid values are "independent" or "dependent". Default is "independent". 
- - **parentFileset**: Specifies the parent fileset under which dependent fileset should be created. Mandatory if "filesetType" is specified.
+ - **filesetType**: Type of fileset. Valid values are "independent" or "dependent". Default: independent
+ - **parentFileset**: Specifies the parent fileset under which dependent fileset should be created.
  - **inodeLimit**: Inode limit for fileset based volumes. If not specified, default IBM Spectrum Scale inode limit of 1 million is used.
  
 For dynamic provisioning, use sample storageClass, pvc and pod files for sanity test under examples/dynamic

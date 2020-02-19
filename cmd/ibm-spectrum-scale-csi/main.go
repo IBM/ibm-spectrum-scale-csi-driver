@@ -26,12 +26,7 @@ import (
 	"github.com/golang/glog"
 
 	driver "github.com/IBM/ibm-spectrum-scale-csi-driver/csiplugin"
-	mountmanager "github.com/IBM/ibm-spectrum-scale-csi-driver/pkg/mount-manager"
 )
-
-func init() {
-	flag.Set("logtostderr", "true")
-}
 
 var (
 	endpoint      = flag.String("endpoint", "unix://tmp/csi.sock", "CSI endpoint")
@@ -41,7 +36,9 @@ var (
 )
 
 func main() {
+	_ = flag.Set("logtostderr", "true")
 	flag.Parse()
+
 	rand.Seed(time.Now().UnixNano())
 
 	if err := createPersistentStorage(path.Join(driver.PluginFolder, "controller")); err != nil {
@@ -59,8 +56,7 @@ func main() {
 
 func handle() {
 	driver := driver.GetScaleDriver()
-	mounter := mountmanager.NewSafeMounter()
-	err := driver.SetupScaleDriver(*driverName, vendorVersion, *nodeID, mounter)
+	err := driver.SetupScaleDriver(*driverName, vendorVersion, *nodeID)
 	if err != nil {
 		glog.Fatalf("Failed to initialize Scale CSI Driver: %v", err)
 	}
@@ -72,7 +68,6 @@ func createPersistentStorage(persistentStoragePath string) error {
 		if err := os.MkdirAll(persistentStoragePath, os.FileMode(0755)); err != nil {
 			return err
 		}
-	} else {
 	}
 	return nil
 }
